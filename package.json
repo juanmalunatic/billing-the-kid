@@ -1,0 +1,25 @@
+{
+  "name": "billing-the-kid",
+  "version": "1.0.0",
+  "description": "Fetch records from Google Calendar, construct an Invoice",
+  "main": "src/index.js",
+  "bin": {
+    "@juanmalunatic/billtk": "bin/billtk",
+    "billtk": "bin/billtk"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "cli",
+    "billtk"
+  ],
+  "author": "Juan Manuel Luna López",
+  "license": "MIT",
+  "dependencies": {
+    "arg": "^4.1.1",
+    "esm": "^3.2.25",
+    "inquirer": "^6.5.0",
+    "node-google-calendar": "^1.1.1"
+  }
+}
