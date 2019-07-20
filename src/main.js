@@ -8,8 +8,10 @@ export async function billtk(options) {
   let dirRun = process.cwd();
   console.log(dirRun);
   console.log(options);
+  
 
   // Test
+  /*
   let calendarId = CONFIG.calendarId['primary'];
   let params = {
     timeMin: '2017-05-20T06:00:00+08:00',
@@ -28,4 +30,5 @@ export async function billtk(options) {
       //Error
       console.log('Error: listSingleEvents -' + err.message);
     });
+  */
 }

@@ -1,3 +1,4 @@
 conf/gcal-settings.js
 conf/keys/
 node_modules
+.vscode/

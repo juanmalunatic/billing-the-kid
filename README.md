@@ -39,6 +39,8 @@ Follow https://github.com/yuhong90/node-google-calendar/wiki#preparations-needed
 - [X] Auth to Google Calendar
 - [X] Fetch N entries
 - [ ] Fetch N entries delimited by dates
+  - [ ] Format dates as RFC3339
+  - [ ] Add dates to query
 - [ ] Filter entries
 - [ ] Construct report
   
