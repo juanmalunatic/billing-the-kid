@@ -15,16 +15,21 @@ export async function billtk(options) {
   let params = {
     timeMin: options['dateStart'],
     timeMax: options['dateEnd'],
-    //q: 'query term', <-- TO-DO
     singleEvents: true,
     orderBy: 'startTime'
-  }; 	//Optional query parameters referencing google APIs
+  };
+
+  if ('nativeQ' in options) {
+    params.q = options['nativeQ'];
+  }
+
+  let a = "";
 
   cal.Events.list(calendarId, params)
-    .then(json => {
+    .then(jsonEventList => {
       //Success
       console.log('List of events on calendar within time-range:');
-      console.log(json);
+      console.log(jsonEventList);
     }).catch(err => {
       //Error
       console.log('Error: listSingleEvents -' + err.message);

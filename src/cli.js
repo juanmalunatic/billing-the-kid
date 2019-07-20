@@ -4,8 +4,8 @@ const moment = require('moment');
 
 // Default values
 const DEFAULTS = {
-  dateStart   : formatDate(moment("1970-01-01")),
-  dateEnd     : formatDate(moment()),
+  dateStart: formatDate(moment("1970-01-01")),
+  dateEnd: formatDate(moment()),
   titleInclude: "TO-DO",
 }
 
@@ -15,9 +15,11 @@ function parseArgumentsIntoOptions(rawArgs) {
       '--date-start': String,
       '--date-end': String,
       '--title-include': String,
+      '--native-q': String,
       '-s': '--date-start',
       '-e': '--date-end',
       '-ti': '--title-include',
+      '-q': '--native-q',
     },
     {
       argv: rawArgs.slice(2),
@@ -36,20 +38,20 @@ function formatArgs(args) {
   return args;
 }
 
-function isArgsEmpty (args) {
+function isArgsEmpty(args) {
   return Object.keys(args).length == 1;
 }
 
 function formatIncomingArgs(args) {
-  
+
   // Remove if '_' is empty
   if (args['_'].length == 0) {
     delete args['_'];
   }
-  
+
   for (let key in args) {
     // Dates
-    if (key.indexOf('date')) { // Good enough for now
+    if (key.indexOf('date') !== -1) { // Good enough for now
       args[key] = formatDate(moment(args[key]));
     }
   }
