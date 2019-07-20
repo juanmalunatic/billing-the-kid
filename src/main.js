@@ -11,9 +11,8 @@ export async function billtk(options) {
 
   // Placeholder
   let dirRun = process.cwd();
-  console.log(dirRun);
-  console.log(options);
-
+  //console.log(dirRun);
+  //console.log(options);
 
   // Test
   let calendarId = CONFIG.calendarId['primary'];
@@ -31,9 +30,11 @@ export async function billtk(options) {
   cal.Events.list(calendarId, params)
     .then(jsonEventList => {
       //Success
-      console.log('List of events on calendar within time-range:');
       let report = createReport(jsonEventList);
-      console.log(report);
+      //console.log('List of events on calendar within time-range:');
+      console.log(
+        JSON.stringify(report, null, 2)
+      );
     }).catch(err => {
       //Error
       console.log('Error: listSingleEvents -' + err.message);
