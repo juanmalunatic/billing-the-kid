@@ -21,6 +21,7 @@ outputs a nice table ready to be attached to invoices.
     --desc-include
     --desc-exclude
     --output-format
+    --output-timezone "America/Bogota" by default
 
 [1] "Free text search terms to find events that match these terms in any field,
 except for extended properties. Optional. ".
@@ -49,8 +50,12 @@ Follow https://github.com/yuhong90/node-google-calendar/wiki#preparations-needed
 - [x] Filter entries
   - [x] Filter with Google's native "q" option
   - [ ] Exclude locally w/ regex
-
-- [ ] Construct report
+- [x] Calculate time of events
+- [!] Construct primitive report
+  - [x] JSON
+  - [ ] CSV
+- [ ] Generate aggregate stats
+  - [ ] Total hours
   
 ## References
 https://www.twilio.com/blog/how-to-build-a-cli-with-node-js
