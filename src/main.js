@@ -8,14 +8,13 @@ export async function billtk(options) {
   let dirRun = process.cwd();
   console.log(dirRun);
   console.log(options);
-  
+
 
   // Test
-  /*
   let calendarId = CONFIG.calendarId['primary'];
   let params = {
-    timeMin: '2017-05-20T06:00:00+08:00',
-    timeMax: '2019-10-25T22:00:00+08:00',
+    timeMin: options['dateStart'],
+    timeMax: options['dateEnd'],
     //q: 'query term', <-- TO-DO
     singleEvents: true,
     orderBy: 'startTime'
@@ -30,5 +29,5 @@ export async function billtk(options) {
       //Error
       console.log('Error: listSingleEvents -' + err.message);
     });
-  */
+
 }
