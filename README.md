@@ -4,6 +4,8 @@
 It grabs entries from a Google Calendar, sorts/filters them, and 
 outputs a nice table ready to be attached to invoices.
 
+Default output is the console for now. CSV coming asap.
+
 ## Options
 ```
   Minimal options
@@ -13,6 +15,13 @@ outputs a nice table ready to be attached to invoices.
   --date-end        2019-07-02
   --title-include   regex "(b:WP)"
   --native-q        Native GCal's API [1]
+
+  Quick (and highly personalized) options
+    These options are temporary and override "native-q"
+  --week    Show the amount of hours worked this week
+  --day    
+  --month
+    
 
   Planned options
 
@@ -42,6 +51,7 @@ Follow https://github.com/yuhong90/node-google-calendar/wiki#preparations-needed
 ## Roadmap
 
 - [X] Receive essential CLI arguments
+  - [x] Switch to commander.js
 - [X] Auth to Google Calendar
 - [X] Fetch N entries
 - [x] Fetch N entries delimited by dates
@@ -54,8 +64,12 @@ Follow https://github.com/yuhong90/node-google-calendar/wiki#preparations-needed
 - [!] Construct primitive report
   - [x] JSON
   - [ ] CSV
+  - [ ] stdout summary
 - [ ] Generate aggregate stats
-  - [ ] Total hours
+  - [ ] Hours by day/week/month
+- [ ] Use HTML-like tags to separate content from the description box
+  - [ ] <summary>
+  - [ ] <to-do>
   
 ## References
 https://www.twilio.com/blog/how-to-build-a-cli-with-node-js

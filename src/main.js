@@ -1,30 +1,29 @@
-const CONFIG = require('../conf/gcal-settings');
-const CalendarAPI = require('node-google-calendar');
 const moment = require('moment-timezone');
 moment.tz.setDefault("America/Bogota");
 
-const GCAL_DATE_FORMAT = 'YYYY-MM-DDTHH:mm:ssZ';
+const CONFIG = require('../conf/gcal-settings');
+const CalendarAPI = require('node-google-calendar');
 let cal = new CalendarAPI(CONFIG);
-const OUTPUT_DATE_FORMAT = 'YYYY-MM-DD HH:mm';
 
-export async function billtk(options) {
+const OUTPUT_DATE_FORMAT = 'YYYY-MM-DD HH:mm';
+const GCAL_DATE_FORMAT   = 'YYYY-MM-DDTHH:mm:ssZ';
+
+export async function billtk(program) {
 
   // Placeholder
   let dirRun = process.cwd();
-  //console.log(dirRun);
-  //console.log(options);
 
   // Test
   let calendarId = CONFIG.calendarId['primary'];
   let params = {
-    timeMin: options['dateStart'],
-    timeMax: options['dateEnd'],
+    timeMin: program.dateStart,
+    timeMax: program.dateEnd,
     singleEvents: true,
     orderBy: 'startTime'
   };
 
-  if ('nativeQ' in options) {
-    params.q = options['nativeQ'];
+  if (program.nativeQ !== undefined) {
+    params.q = program.nativeQ;
   }
 
   cal.Events.list(calendarId, params)
@@ -85,7 +84,7 @@ function formatFieldDisplay(reportData) {
   for (let event of reportData) {
     // Format dates
     event["start"] = event["start"].format(OUTPUT_DATE_FORMAT);
-    event["end"]   = event["end"]  .format(OUTPUT_DATE_FORMAT);
+    event["end"]   = event["end"].format(OUTPUT_DATE_FORMAT);
   }
   return reportData;
 }
