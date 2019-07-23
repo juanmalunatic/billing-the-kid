@@ -50,9 +50,7 @@ export async function billtk(program) {
   cal.Events.list(calendarId, params)
     .then(jsonEventList => {
       //Success
-      let report = createReport(jsonEventList);
-
-      
+      let report = createReport(jsonEventList);      
 
       console.log(
         JSON.stringify(report, null, 2)
@@ -69,6 +67,10 @@ function createReport(jsonEventList) {
   reportData = filterFields(jsonEventList);
   reportData = addCalculatedFields(reportData);
   reportData = formatFieldDisplay(reportData);
+
+  let summary = summarizeReport(reportData);
+  reportData.push(summary);
+
   return reportData;
 }
 
@@ -132,4 +134,25 @@ function paramsPeriod(program, period) {
     timeMax: periodEnd.toGCal(),
   }
   return obj;
+}
+
+function summarizeReport(reportData) {
+  
+  let sumMinutes = 0;
+  for (let event of reportData) {
+    sumMinutes += event.minutes;
+  }
+
+  let hoursHour = Math.trunc(sumMinutes/(60));
+  let hoursMin  = sumMinutes % 60;
+
+  let obj = {
+    "minutes": sumMinutes, 
+    "hours"  : sumMinutes/(60),
+    "hoursF" : hoursHour + ":" + hoursMin,
+  }
+
+  return {
+    "summary": obj
+  };
 }

@@ -67,7 +67,8 @@ Follow https://github.com/yuhong90/node-google-calendar/wiki#preparations-needed
   - [ ] stdout summary
 - [x] Make shortcuts to analyze day/week/month 
   - [x] Allow both a specific day OR all events since day
-- [ ] Generate aggregate stats
+- [x] Generate aggregate stats
+  - [x] Very simple sum of the minutes of retrieved events
 - [ ] Use HTML-like tags to separate content from the description box
   - [ ] <summary>
   - [ ] <to-do>
