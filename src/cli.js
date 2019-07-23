@@ -26,7 +26,25 @@ program
     '-q, --native-q   <string>',
     'Google\'s native query to filter events',
     DEFAULTS["--native-q"]
-  );
+  )
+  .option(
+    '-d, --days [number]',
+    'Fetch today if empty, or the last [number] days'
+  )
+  .option(
+    '-w, --weeks [number]',
+    'Fetch current week if empty, or previous [number] weeks'
+  )
+  .option(
+    '-m, --months [number]',
+    'Fetch current month if empty, or previous [number] months'
+  )
+  .option( 
+    '-c, --cumulative',
+    'Affects -d -w and -m, taking today as the end date.'
+    // For example, if -d 2, by default it takes everything that happened 2 days ago
+    // with -d 2 -c, the app returns all that happens _since_ 2 days ago
+  )
 
 export async function cli(processArgv) {
   program.parse(processArgv);

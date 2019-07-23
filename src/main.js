@@ -26,11 +26,34 @@ export async function billtk(program) {
     params.q = program.nativeQ;
   }
 
+  // Override inputs for special flags
+
+  let period = null;
+  if (program.days !== undefined) {
+    period = 'days';
+  } else if (program.weeks !== undefined) {
+    period = 'weeks';
+  } else if (program.months !== undefined) {
+    period = 'months';
+  }
+  if (period !== null) {
+    let paramsToMerge = paramsPeriod(program, period);
+    Object.assign(params, paramsToMerge);
+  }
+
+  console.log('Params:')
+  console.log(
+    JSON.stringify(params, null, 2)
+  );
+  console.log('--------------------------------------');
+
   cal.Events.list(calendarId, params)
     .then(jsonEventList => {
       //Success
       let report = createReport(jsonEventList);
-      //console.log('List of events on calendar within time-range:');
+
+      
+
       console.log(
         JSON.stringify(report, null, 2)
       );
@@ -56,7 +79,7 @@ function filterFields(jsonEventList) {
       "title": event["summary"],
       "start": event["start"]["dateTime"],
       "end"  : event["end"]["dateTime"],
-      "desc" : event["description"],
+      //"desc" : event["description"],
     };
     reportData.push(reportEvent);
   }
@@ -87,4 +110,26 @@ function formatFieldDisplay(reportData) {
     event["end"]   = event["end"].format(OUTPUT_DATE_FORMAT);
   }
   return reportData;
+}
+
+moment.fn.toGCal = function () {
+  return this.format("YYYY-MM-DDTHH:mm:ssZ");
+}
+
+// I've been bitten off before by over-generalizing and noticing
+// afterwards there's a need to apply custom formatting/processing.
+// Hope it's not the case here.
+
+function paramsPeriod(program, period) {
+  let periodSub  = (program[period] === true) ? 0 : program[period];
+  let periodStart = moment().subtract(periodSub, period).startOf(period);
+  let periodEnd   = moment().subtract(periodSub, period).endOf(period);
+  if (program.cumulative === true) {
+    periodEnd = moment().endOf('day'); // Since start to the end of today
+  }
+  let obj = {
+    timeMin: periodStart.toGCal(),
+    timeMax: periodEnd.toGCal(),
+  }
+  return obj;
 }

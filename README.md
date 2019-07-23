@@ -18,9 +18,9 @@ Default output is the console for now. CSV coming asap.
 
   Quick (and highly personalized) options
     These options are temporary and override "native-q"
-  --week    Show the amount of hours worked this week
-  --day    
-  --month
+  --weeks    Show the amount of hours worked this week
+  --days    
+  --months
     
 
   Planned options
@@ -61,12 +61,13 @@ Follow https://github.com/yuhong90/node-google-calendar/wiki#preparations-needed
   - [x] Filter with Google's native "q" option
   - [ ] Exclude locally w/ regex
 - [x] Calculate time of events
-- [!] Construct primitive report
+- [x] Construct primitive report
   - [x] JSON
   - [ ] CSV
   - [ ] stdout summary
+- [x] Make shortcuts to analyze day/week/month 
+  - [x] Allow both a specific day OR all events since day
 - [ ] Generate aggregate stats
-  - [ ] Hours by day/week/month
 - [ ] Use HTML-like tags to separate content from the description box
   - [ ] <summary>
   - [ ] <to-do>
