@@ -71,6 +71,9 @@ function createReport(jsonEventList) {
   let summary = summarizeReport(reportData);
   reportData.push(summary);
 
+  // TO-DO
+  //reportData = reportFormat(reportData);
+
   return reportData;
 }
 

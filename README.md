@@ -64,7 +64,8 @@ Follow https://github.com/yuhong90/node-google-calendar/wiki#preparations-needed
 - [x] Construct primitive report
   - [x] JSON
   - [ ] CSV
-  - [ ] stdout summary
+    - [ ] Convert JSON to CSV string using [json2csv](https://github.com/zemirco/json2csv).
+- [ ] Split titles to columns to categorize
 - [x] Make shortcuts to analyze day/week/month 
   - [x] Allow both a specific day OR all events since day
 - [x] Generate aggregate stats
