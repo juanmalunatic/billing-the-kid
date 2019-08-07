@@ -21,6 +21,7 @@
     "commander": "^2.20.0",
     "esm": "^3.2.25",
     "inquirer": "^6.5.0",
+    "json2csv": "^4.5.2",
     "moment": "^2.24.0",
     "moment-timezone": "^0.5.26",
     "node-google-calendar": "^1.1.1"

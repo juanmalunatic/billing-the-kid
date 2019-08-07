@@ -66,6 +66,7 @@ function createReport(jsonEventList) {
   let reportData = [];
   reportData = filterFields(jsonEventList);
   reportData = addCalculatedFields(reportData);
+  reportData = splitTitleFields(reportData);
   reportData = formatFieldDisplay(reportData);
 
   let summary = summarizeReport(reportData);
@@ -105,6 +106,51 @@ function addCalculatedFields(reportData) {
     event["minutes"] = minutes;
   }
   return reportData;
+}
+
+function splitTitleFields (reportData) {
+  for (let event of reportData) {
+    // Temporary format:
+    // (b:WP) Project :: Title [Category-plural]
+    // (b:WP) General :: Scrum [Meetings]
+
+    let longTitle = event["title"];
+
+    event["project"]    = getTitleProject (longTitle);
+    event["category"]   = getTitleCategory(longTitle);
+    event["title"]      = getTitleTitle   (longTitle);
+    event["title-long"] = longTitle;
+
+  }
+  return reportData;
+}
+
+function getTitlePart (title, regex, start = 0, end = 0) {
+  let search = title.match(regex);
+  let result = "";
+
+  if (search !== null) {
+    result = search[0]
+      .slice(start, end)
+      .trim();
+  }
+
+  return result;
+}
+
+function getTitleProject (title) {
+  let regex = /\).*?\:\:/g;
+  return getTitlePart(title, regex, 1, -2);
+}
+
+function getTitleCategory (title) {
+  let regex = /\[.*?\]/g;
+  return getTitlePart(title, regex, 1, -1);
+}
+
+function getTitleTitle (title) {
+  let regex = /\:\:.*?\[/g;
+  return getTitlePart(title, regex, 2, -1);
 }
 
 
@@ -159,3 +205,4 @@ function summarizeReport(reportData) {
     "summary": obj
   };
 }
+
