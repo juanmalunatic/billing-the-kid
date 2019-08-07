@@ -101,7 +101,7 @@ function filterFields(jsonEventList) {
       "title": event["summary"],
       "start": event["start"]["dateTime"],
       "end"  : event["end"]["dateTime"],
-      //"desc" : event["description"],
+      "desc" : JSON.stringify(event["description"], null, 2),
     };
     reportData.push(reportEvent);
   }
@@ -112,7 +112,7 @@ function addCalculatedFields(reportData) {
   for (let event of reportData) {
     // Format dates
     event["start"] = moment(event["start"], GCAL_DATE_FORMAT);
-    event["end"]   = moment(event["end"], GCAL_DATE_FORMAT);
+    event["end"]   = moment(event["end"]  , GCAL_DATE_FORMAT);
 
     // Know how many minutes elapsed
     let duration = moment.duration(
@@ -174,7 +174,7 @@ function formatFieldDisplay(reportData) {
   for (let event of reportData) {
     // Format dates
     event["start"] = event["start"].format(OUTPUT_DATE_FORMAT);
-    event["end"] = event["end"].format(OUTPUT_DATE_FORMAT);
+    event["end"]   = event["end"].format(OUTPUT_DATE_FORMAT);
   }
   return reportData;
 }
@@ -259,8 +259,11 @@ function reportFormatJson (report) {
 
 function reportFormatCsv (report) {
 
-  const fields = ['title', 'start', 'end', 'minutes', 'project', 'category', 'title-long'];
-  const opts = { fields };
+  const fields = ['title', 'start', 'end', 'minutes', 'project', 'category', 'title-long', 'desc'];
+  const opts = {
+    "fields": fields,
+    "delimiter": "\t",
+  };
 
   let reportData = report.columns;
 
