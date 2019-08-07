@@ -1,20 +1,47 @@
-const moment = require('moment-timezone');
-moment.tz.setDefault("America/Bogota");
-
-const CONFIG = require('../conf/gcal-settings');
+// Requisites
+const { Parser }  = require('json2csv');
+const moment      = require('moment-timezone');
 const CalendarAPI = require('node-google-calendar');
-let cal = new CalendarAPI(CONFIG);
+const CONFIG      = require('../conf/gcal-settings');
 
+// Defaults
+moment.tz.setDefault("America/Bogota");
 const OUTPUT_DATE_FORMAT = 'YYYY-MM-DD HH:mm';
 const GCAL_DATE_FORMAT   = 'YYYY-MM-DDTHH:mm:ssZ';
 
 export async function billtk(program) {
 
-  // Placeholder
-  let dirRun = process.cwd();
-
-  // Test
   let calendarId = CONFIG.calendarId['primary'];
+  let params = formatQueryParams(program);
+
+  let cal = new CalendarAPI(CONFIG);
+
+  cal.Events
+    .list (calendarId, params)
+    .then (
+      jsonEvents => handleEventList(jsonEvents, program)
+    )
+    .catch(handleEventListError);
+
+}
+
+function handleEventList (jsonEventList, program) {
+  //Success
+  let report = createReport(jsonEventList);
+
+  console.log(
+    JSON.stringify(report, null, 2)
+  );
+}
+
+function handleEventListError (err) {
+  //Error
+  console.log('Error: listSingleEvents -' + err.message);
+}
+
+function formatQueryParams(program) {
+  // Format the query that brings the calendar's events
+
   let params = {
     timeMin: program.dateStart,
     timeMax: program.dateEnd,
@@ -47,20 +74,10 @@ export async function billtk(program) {
   );
   console.log('--------------------------------------');
 
-  cal.Events.list(calendarId, params)
-    .then(jsonEventList => {
-      //Success
-      let report = createReport(jsonEventList);      
-
-      console.log(
-        JSON.stringify(report, null, 2)
-      );
-    }).catch(err => {
-      //Error
-      console.log('Error: listSingleEvents -' + err.message);
-    });
+  return params;
 
 }
+
 
 function createReport(jsonEventList) {
   let reportData = [];
@@ -69,10 +86,10 @@ function createReport(jsonEventList) {
   reportData = splitTitleFields(reportData);
   reportData = formatFieldDisplay(reportData);
 
+  // Summarize
   let summary = summarizeReport(reportData);
   reportData.push(summary);
 
-  // TO-DO
   //reportData = reportFormat(reportData);
 
   return reportData;
@@ -84,7 +101,7 @@ function filterFields(jsonEventList) {
     let reportEvent = {
       "title": event["summary"],
       "start": event["start"]["dateTime"],
-      "end"  : event["end"]["dateTime"],
+      "end": event["end"]["dateTime"],
       //"desc" : event["description"],
     };
     reportData.push(reportEvent);
@@ -96,7 +113,7 @@ function addCalculatedFields(reportData) {
   for (let event of reportData) {
     // Format dates
     event["start"] = moment(event["start"], GCAL_DATE_FORMAT);
-    event["end"]   = moment(event["end"], GCAL_DATE_FORMAT);
+    event["end"] = moment(event["end"], GCAL_DATE_FORMAT);
 
     // Know how many minutes elapsed
     let duration = moment.duration(
@@ -108,7 +125,7 @@ function addCalculatedFields(reportData) {
   return reportData;
 }
 
-function splitTitleFields (reportData) {
+function splitTitleFields(reportData) {
   for (let event of reportData) {
     // Temporary format:
     // (b:WP) Project :: Title [Category-plural]
@@ -116,16 +133,16 @@ function splitTitleFields (reportData) {
 
     let longTitle = event["title"];
 
-    event["project"]    = getTitleProject (longTitle);
-    event["category"]   = getTitleCategory(longTitle);
-    event["title"]      = getTitleTitle   (longTitle);
+    event["project"] = getTitleProject(longTitle);
+    event["category"] = getTitleCategory(longTitle);
+    event["title"] = getTitleTitle(longTitle);
     event["title-long"] = longTitle;
 
   }
   return reportData;
 }
 
-function getTitlePart (title, regex, start = 0, end = 0) {
+function getTitlePart(title, regex, start = 0, end = 0) {
   let search = title.match(regex);
   let result = "";
 
@@ -138,17 +155,17 @@ function getTitlePart (title, regex, start = 0, end = 0) {
   return result;
 }
 
-function getTitleProject (title) {
+function getTitleProject(title) {
   let regex = /\).*?\:\:/g;
   return getTitlePart(title, regex, 1, -2);
 }
 
-function getTitleCategory (title) {
+function getTitleCategory(title) {
   let regex = /\[.*?\]/g;
   return getTitlePart(title, regex, 1, -1);
 }
 
-function getTitleTitle (title) {
+function getTitleTitle(title) {
   let regex = /\:\:.*?\[/g;
   return getTitlePart(title, regex, 2, -1);
 }
@@ -158,7 +175,7 @@ function formatFieldDisplay(reportData) {
   for (let event of reportData) {
     // Format dates
     event["start"] = event["start"].format(OUTPUT_DATE_FORMAT);
-    event["end"]   = event["end"].format(OUTPUT_DATE_FORMAT);
+    event["end"] = event["end"].format(OUTPUT_DATE_FORMAT);
   }
   return reportData;
 }
@@ -172,9 +189,9 @@ moment.fn.toGCal = function () {
 // Hope it's not the case here.
 
 function paramsPeriod(program, period) {
-  let periodSub  = (program[period] === true) ? 0 : program[period];
+  let periodSub = (program[period] === true) ? 0 : program[period];
   let periodStart = moment().subtract(periodSub, period).startOf(period);
-  let periodEnd   = moment().subtract(periodSub, period).endOf(period);
+  let periodEnd = moment().subtract(periodSub, period).endOf(period);
   if (program.cumulative === true) {
     periodEnd = moment().endOf('day'); // Since start to the end of today
   }
@@ -186,19 +203,19 @@ function paramsPeriod(program, period) {
 }
 
 function summarizeReport(reportData) {
-  
+
   let sumMinutes = 0;
   for (let event of reportData) {
     sumMinutes += event.minutes;
   }
 
-  let hoursHour = Math.trunc(sumMinutes/(60));
-  let hoursMin  = sumMinutes % 60;
+  let hoursHour = Math.trunc(sumMinutes / (60));
+  let hoursMin = sumMinutes % 60;
 
   let obj = {
-    "minutes": sumMinutes, 
-    "hours"  : sumMinutes/(60),
-    "hoursF" : hoursHour + ":" + hoursMin,
+    "minutes": sumMinutes,
+    "hours": sumMinutes / (60),
+    "hoursF": hoursHour + ":" + hoursMin,
   }
 
   return {
@@ -206,3 +223,18 @@ function summarizeReport(reportData) {
   };
 }
 
+
+function reportFormat(reportData) {
+
+  const fields = ['title', 'start', 'end', 'minutes', 'project', 'category', 'title-long'];
+  const opts = { fields };
+
+  try {
+    const parser = new Parser(opts);
+    const csv = parser.parse(reportData);
+    console.log(csv);
+  } catch (err) {
+    console.error(err);
+  }
+
+}
