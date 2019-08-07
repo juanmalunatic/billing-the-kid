@@ -45,6 +45,10 @@ program
     // For example, if -d 2, by default it takes everything that happened 2 days ago
     // with -d 2 -c, the app returns all that happens _since_ 2 days ago
   )
+  .option( 
+    '-o, --output <string>',
+    'Selects output format: verbose (console, default) | json | csv '
+  )
 
 export async function cli(processArgv) {
   program.parse(processArgv);

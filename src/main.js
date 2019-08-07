@@ -12,26 +12,28 @@ const GCAL_DATE_FORMAT   = 'YYYY-MM-DDTHH:mm:ssZ';
 export async function billtk(program) {
 
   let calendarId = CONFIG.calendarId['primary'];
-  let params = formatQueryParams(program);
+  let queryParams = formatQueryParams(program);
 
   let cal = new CalendarAPI(CONFIG);
 
   cal.Events
-    .list (calendarId, params)
+    .list (calendarId, queryParams)
     .then (
-      jsonEvents => handleEventList(jsonEvents, program)
+      jsonEvents => handleEventList(jsonEvents, program, queryParams)
     )
     .catch(handleEventListError);
 
 }
 
-function handleEventList (jsonEventList, program) {
-  //Success
-  let report = createReport(jsonEventList);
+function handleEventList (jsonEventList, program, queryParams) {
+  
+  // Do all the heavy lifting:
+  // event processing, field computation, title formatting
+  let report = reportProcessData(jsonEventList);
 
-  console.log(
-    JSON.stringify(report, null, 2)
-  );
+  // Format output
+  let output = reportFormatOutput(report, program, queryParams);
+  console.log (output);
 }
 
 function handleEventListError (err) {
@@ -68,31 +70,28 @@ function formatQueryParams(program) {
     Object.assign(params, paramsToMerge);
   }
 
-  console.log('Params:')
-  console.log(
-    JSON.stringify(params, null, 2)
-  );
-  console.log('--------------------------------------');
-
   return params;
 
 }
 
 
-function createReport(jsonEventList) {
-  let reportData = [];
-  reportData = filterFields(jsonEventList);
-  reportData = addCalculatedFields(reportData);
-  reportData = splitTitleFields(reportData);
-  reportData = formatFieldDisplay(reportData);
+function reportProcessData (jsonEventList) {
 
-  // Summarize
-  let summary = summarizeReport(reportData);
-  reportData.push(summary);
+  // Heavy processing
+  let reportColumns = [];
+  reportColumns = filterFields(jsonEventList);
+  reportColumns = addCalculatedFields(reportColumns);
+  reportColumns = splitTitleFields   (reportColumns);
+  reportColumns = formatFieldDisplay (reportColumns);
 
-  //reportData = reportFormat(reportData);
+  // Short summary
+  let reportSummary = summarizeReport(reportColumns);
 
-  return reportData;
+  return {
+    "name": "report",
+    "columns": reportColumns,
+    "summary": reportSummary,
+  }
 }
 
 function filterFields(jsonEventList) {
@@ -101,7 +100,7 @@ function filterFields(jsonEventList) {
     let reportEvent = {
       "title": event["summary"],
       "start": event["start"]["dateTime"],
-      "end": event["end"]["dateTime"],
+      "end"  : event["end"]["dateTime"],
       //"desc" : event["description"],
     };
     reportData.push(reportEvent);
@@ -113,7 +112,7 @@ function addCalculatedFields(reportData) {
   for (let event of reportData) {
     // Format dates
     event["start"] = moment(event["start"], GCAL_DATE_FORMAT);
-    event["end"] = moment(event["end"], GCAL_DATE_FORMAT);
+    event["end"]   = moment(event["end"], GCAL_DATE_FORMAT);
 
     // Know how many minutes elapsed
     let duration = moment.duration(
@@ -133,9 +132,9 @@ function splitTitleFields(reportData) {
 
     let longTitle = event["title"];
 
-    event["project"] = getTitleProject(longTitle);
-    event["category"] = getTitleCategory(longTitle);
-    event["title"] = getTitleTitle(longTitle);
+    event["project"]    = getTitleProject(longTitle);
+    event["category"]   = getTitleCategory(longTitle);
+    event["title"]      = getTitleTitle(longTitle);
     event["title-long"] = longTitle;
 
   }
@@ -224,17 +223,56 @@ function summarizeReport(reportData) {
 }
 
 
-function reportFormat(reportData) {
+function reportFormatOutput(report, program, queryParams) {
+
+  let output = ""
+
+  if (program.output === undefined || program.ouptut === "verbose") {
+    output = reportFormatVerbose(report, queryParams)
+  } else if (program.output === "json") {
+    output = reportFormatJson(report);
+  } else if (program.output === "csv") {
+    output = reportFormatCsv(report);
+  }
+
+  return output;
+}
+
+function reportFormatVerbose (report, queryParams) {
+  
+  let obj = {
+    "queryParams": queryParams,
+    "events"     : report.columns,
+    "summary"    : report.summary,
+  };
+    
+  return JSON.stringify( 
+    obj, null, 2
+  )
+}
+
+function reportFormatJson (report) {
+  return JSON.stringify( 
+    report.columns, null, 2
+  )
+}
+
+function reportFormatCsv (report) {
 
   const fields = ['title', 'start', 'end', 'minutes', 'project', 'category', 'title-long'];
   const opts = { fields };
 
+  let reportData = report.columns;
+
   try {
+
     const parser = new Parser(opts);
     const csv = parser.parse(reportData);
-    console.log(csv);
-  } catch (err) {
-    console.error(err);
-  }
+    return csv;
 
+  } catch (err) {
+
+    return error;
+
+  }
 }

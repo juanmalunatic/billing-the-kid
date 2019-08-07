@@ -63,16 +63,17 @@ Follow https://github.com/yuhong90/node-google-calendar/wiki#preparations-needed
 - [x] Calculate time of events
 - [x] Construct primitive report
   - [x] JSON
-  - [ ] CSV
-    - [ ] Convert JSON to CSV string using [json2csv](https://github.com/zemirco/json2csv).
-- [ ] Split titles to columns to categorize
+  - [x] CSV
+    - [x] Convert JSON to CSV string using [json2csv](https://github.com/zemirco/json2csv).
+- [x] Split titles to columns to categorize
 - [x] Make shortcuts to analyze day/week/month 
   - [x] Allow both a specific day OR all events since day
 - [x] Generate aggregate stats
   - [x] Very simple sum of the minutes of retrieved events
-- [ ] Use HTML-like tags to separate content from the description box
-  - [ ] <summary>
-  - [ ] <to-do>
+- [ ] Use tags to separate content from the description box
+  - [ ] === Summary
+  - [ ] === TO-DO
+- [ ] Add summary to CSV/JSON output
   
 ## References
 https://www.twilio.com/blog/how-to-build-a-cli-with-node-js
