@@ -6,6 +6,15 @@ outputs a nice table ready to be attached to invoices.
 
 Default output is the console for now. CSV coming asap.
 
+## Installation
+First, configure a valid gcal-settings.js in /conf, and a proper key.
+
+Then:
+```
+npm install
+npm link
+```
+
 ## Options
 ```
   Minimal options
