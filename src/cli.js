@@ -23,6 +23,11 @@ program
     DEFAULTS["--date-end"]
   )
   .option(
+    '-n, --single-day  <YYYY-MM-dd>',
+    'Sum all the hours of a specific day',
+    formatDateGCal
+  )
+  .option(
     '-q, --native-q   <string>',
     'Google\'s native query to filter events',
     DEFAULTS["--native-q"]
@@ -39,13 +44,13 @@ program
     '-m, --months [number]',
     'Fetch current month if empty, or previous [number] months'
   )
-  .option( 
+  .option(
     '-c, --cumulative',
     'Affects -d -w and -m, taking today as the end date.'
     // For example, if -d 2, by default it takes everything that happened 2 days ago
     // with -d 2 -c, the app returns all that happens _since_ 2 days ago
   )
-  .option( 
+  .option(
     '-o, --output <string>',
     'Selects output format: verbose (console, default) | json | csv '
   )

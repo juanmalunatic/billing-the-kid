@@ -14,6 +14,14 @@ Then:
 npm install
 npm link
 ```
+## Development
+
+To compile locally, after pulling/making changes, just run the following
+command in the root directory.
+
+```
+billtk [...options]
+```
 
 ## Options
 ```

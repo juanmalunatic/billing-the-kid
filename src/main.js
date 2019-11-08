@@ -26,7 +26,6 @@ export async function billtk(program) {
 }
 
 function handleEventList (jsonEventList, program, queryParams) {
-  
   // Do all the heavy lifting:
   // event processing, field computation, title formatting
   let report = reportProcessData(jsonEventList);
@@ -48,6 +47,7 @@ function formatQueryParams(program) {
     timeMin: program.dateStart,
     timeMax: program.dateEnd,
     singleEvents: true,
+    singleDay: program.singleDay,
     orderBy: 'startTime'
   };
 
@@ -64,6 +64,8 @@ function formatQueryParams(program) {
     period = 'weeks';
   } else if (program.months !== undefined) {
     period = 'months';
+  } else if (program.singleDay !== undefined) {
+    period = 'singleDay';
   }
   if (period !== null) {
     let paramsToMerge = paramsPeriod(program, period);
@@ -188,9 +190,23 @@ moment.fn.toGCal = function () {
 // Hope it's not the case here.
 
 function paramsPeriod(program, period) {
+
+  // If period is a string, store its value
   let periodSub = (program[period] === true) ? 0 : program[period];
+
   let periodStart = moment().subtract(periodSub, period).startOf(period);
   let periodEnd = moment().subtract(periodSub, period).endOf(period);
+
+  if (period === 'singleDay') {
+    const singleDay = moment(program.singleDay, "YYYY-MM-DD");
+    periodStart = moment(singleDay);
+    periodEnd   = moment(singleDay).add(1, 'days').startOf('day');
+  }
+
+  //console.log("sub"  , periodSub);
+  //console.log("start", periodStart);
+  //console.log("end"  , periodEnd);
+
   if (program.cumulative === true) {
     periodEnd = moment().endOf('day'); // Since start to the end of today
   }
